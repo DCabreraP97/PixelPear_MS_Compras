@@ -49,6 +49,9 @@ public class CarritoController {
 
     // Mejoar este endpoint para que devuelva un mensaje de error si el alias es null
     // y que devuelva un mensaje de error si no hay productos en el carrito
+
+    //Cambiar este los parametros de este endpoint para dejarlo vacio y que continue con el alias seteado antes
+    //Si no encuentra alias en la linea 61 devuelve un mensaje de error, borrar linea 57 a 59 luego
     @GetMapping("/mostrar")
     public ResponseEntity<List<ItemCarrito>> obtenerCarritoUsuario(@RequestParam String Alias) {
         if (Alias == null) {
@@ -81,7 +84,8 @@ public class CarritoController {
     }
     //Faltan endpoints
     // para eliminar productos del carrito y para vaciar el carrito /carrito/remover/{productoId} Remover producto del carrito
-    // /carrito/vaciar/usuarioId Vaciar carrito de un usuario
+    // /carrito/vaciar alias como parametro Vaciar carrito de un usuario
+    // Cambiar el nombre de los parametros de alias a alias uniformemente
 
     @GetMapping("/alias")
     public ResponseEntity<String> aliasActual() {
@@ -89,7 +93,7 @@ public class CarritoController {
     }
     
     @PostMapping("/cambiarAlias")
-    public ResponseEntity<String> cambiarAlias(@RequestBody String aliasNuevo) {
+    public ResponseEntity<String> cambiarAlias(@RequestParam String aliasNuevo) {
         this.alias = aliasNuevo;
         return ResponseEntity.ok("Alias cambiado a " + alias);
     }
