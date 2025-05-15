@@ -25,6 +25,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/carrito")
 @RequiredArgsConstructor
 
+// Falta hacer controller de pedidos,facturas,etc y implementar los cupones(clases con descuento) en pedidos
+// Falta implementar los dtos 
+
 public class CarritoController {
 
 
