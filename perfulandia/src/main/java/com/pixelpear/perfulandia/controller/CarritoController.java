@@ -47,11 +47,13 @@ public class CarritoController {
     private final ItemCarritoService itemCarritoService;
           
 
-    // Mejoar este endpoint para que devuelva un mensaje de error si el alias es null
+    // Mejorar este endpoint para que devuelva un mensaje de error si el alias es null
     // y que devuelva un mensaje de error si no hay productos en el carrito
 
     //Cambiar este los parametros de este endpoint para dejarlo vacio y que continue con el alias seteado antes
     //Si no encuentra alias en la linea 61 devuelve un mensaje de error, borrar linea 57 a 59 luego
+
+    //Ponerle el @Column a las entity del model
     @GetMapping("/mostrar")
     public ResponseEntity<List<ItemCarrito>> obtenerCarritoUsuario(@RequestParam String Alias) {
         if (Alias == null) {
