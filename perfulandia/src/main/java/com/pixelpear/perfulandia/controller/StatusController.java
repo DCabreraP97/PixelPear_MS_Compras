@@ -7,10 +7,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 
 @RestController
-public class ComprasController {
+public class StatusController {
     @GetMapping("/status")
     public ResponseEntity<String> getStatus() {
-        return ResponseEntity.ok("El servicio está operativo 🥂");
+        return ResponseEntity.ok("MS-Ventas está operativo 🥂");
     }
     
 }
+
