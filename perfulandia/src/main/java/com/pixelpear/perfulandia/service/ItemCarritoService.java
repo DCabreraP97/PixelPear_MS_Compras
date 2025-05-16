@@ -22,4 +22,12 @@ public class ItemCarritoService {
         return itemCarritoRepository.findByAlias(alias);
     }
 
+    public void eliminarItemCarrito(Long idProducto, String alias) {
+        itemCarritoRepository.deleteByIdProductoAndAlias(idProducto, alias);
+    }
+
+    public void vaciarCarrito(String alias) {
+        itemCarritoRepository.deleteByAlias(alias);
+    }
+
 }

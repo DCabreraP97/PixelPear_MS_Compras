@@ -11,5 +11,9 @@ import com.pixelpear.perfulandia.model.ItemCarrito;
 public interface ItemCarritoRepository extends JpaRepository<ItemCarrito, Long> {
 
     List<ItemCarrito> findByAlias(String alias);
+    
+    void deleteByIdProductoAndAlias(Long idProducto, String alias);
+
+    void deleteByAlias(String alias);
 
 }

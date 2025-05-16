@@ -1,6 +1,5 @@
 package com.pixelpear.perfulandia.controller;
 
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,17 +14,19 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 
+
 @RestController
 @RequestMapping("/carrito")
 @RequiredArgsConstructor
 
-// Falta hacer controller de pedidos,facturas,etc y implementar los cupones(clases con descuento) en pedidos
+// Falta hacer controller de pedidos,service pedido,repository pedido,model itemPedido,model facturas,etc y implementar los cupones(clases con descuento) en pedidos
 // Falta implementar los dtos 
 
 public class CarritoController {
@@ -54,18 +55,18 @@ public class CarritoController {
     //Si no encuentra alias en la linea 61 devuelve un mensaje de error, borrar linea 57 a 59 luego
 
     //Ponerle el @Column a las entity del model
-    @GetMapping("/mostrar")
-    public ResponseEntity<List<ItemCarrito>> obtenerCarritoUsuario(@RequestParam String Alias) {
-        if (Alias == null) {
+    @GetMapping("/mostrarItems")
+    public ResponseEntity<List<ItemCarrito>> obtenerCarritoUsuario() {
+        if (alias == null) {
             return ResponseEntity.badRequest().body(null);
         }
         else{
-            List<ItemCarrito> listaRetorno = new ArrayList<>(itemCarritoService.obtenerItemsCarritoPorAlias(Alias));
+            List<ItemCarrito> listaRetorno = new ArrayList<>(itemCarritoService.obtenerItemsCarritoPorAlias(alias));
             return ResponseEntity.ok(listaRetorno);
         }
     }
 
-    @PostMapping("/agregar")
+    @PostMapping("/agregarItem")
     public ResponseEntity<String> agregarProductoCarrito(@RequestParam Long idProducto, @RequestParam Integer cantidad) {
         Producto producto = listaProductos.stream()
                 .filter(p -> p.getIdProducto().equals(idProducto))
@@ -78,16 +79,43 @@ public class CarritoController {
                 producto.setStock(producto.getStock() - cantidad);
                 Long precioTotal = producto.getPrecio().longValue() * cantidad;
                 itemCarritoService.agregarItemCarrito(new ItemCarrito(idProducto, alias, producto.getNombre(), producto.getPrecio(), cantidad, precioTotal));
-                return ResponseEntity.ok(MessageFormat.format("El producto %s ha sido agregado al carrito. El Precio total seria: $%d", producto.getNombre(), precioTotal));
+                return ResponseEntity.ok("El producto " + producto.getNombre() + " ha sido agregado al carrito. El Precio total seria: $" + precioTotal);
             } else {
                 return ResponseEntity.badRequest().body("No hay suficiente stock para el producto solicitado.");
             }
         }
     }
-    //Faltan endpoints
-    // para eliminar productos del carrito y para vaciar el carrito /carrito/remover/{productoId} Remover producto del carrito
-    // /carrito/vaciar alias como parametro Vaciar carrito de un usuario
-    // Cambiar el nombre de los parametros de alias a alias uniformemente
+
+    @DeleteMapping("eliminar/carrito")
+    public ResponseEntity<String> vaciarCarrito() {
+        if(alias == null) {
+            return ResponseEntity.badRequest().body("No se ha definido un alias, ingrese un alias antes de continuar");
+        }else{
+            itemCarritoService.vaciarCarrito(alias);
+            return ResponseEntity.ok("El carrito ha sido vaciado");
+        }
+    }
+
+    @DeleteMapping("/eliminar/{idProducto}")
+    public ResponseEntity<String> eliminarProductoCarrito(@PathVariable Long idProducto) {
+        if(alias == null) {
+            return ResponseEntity.badRequest().body("No se ha definido un alias, ingrese un alias antes de continuar");
+        }else{
+            List<ItemCarrito> itemsCarrito = itemCarritoService.obtenerItemsCarritoPorAlias(alias);
+            ItemCarrito itemCarrito = itemsCarrito.stream()
+                .filter(p -> p.getIdProducto().equals(idProducto))
+                .findFirst()
+                .orElse(null);
+            if(itemCarrito != null){
+                itemCarritoService.eliminarItemCarrito(idProducto, alias);
+                return ResponseEntity.ok("El producto ha sido eliminado del carrito");
+            }
+            else{
+                return ResponseEntity.badRequest().body("No se ha encontrado el producto en el carrito");
+            }
+        }
+    }
+
 
     @GetMapping("/alias")
     public ResponseEntity<String> aliasActual() {
