@@ -3,6 +3,7 @@ package com.pixelpear.perfulandia.service;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.pixelpear.perfulandia.model.ItemCarrito;
 import com.pixelpear.perfulandia.repository.ItemCarritoRepository;
@@ -11,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class ItemCarritoService {
     private final ItemCarritoRepository itemCarritoRepository;
 
