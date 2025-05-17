@@ -31,25 +31,28 @@ public class PedidoController {
     private final ItemPedidoService itemPedidoService;
     private String alias;
     @PostMapping("/confirmar")
-    public ResponseEntity<String> confirmarPedido(@RequestParam (required = false) String codigoDescuento) {
+    public ResponseEntity<Pedido> confirmarPedido(@RequestParam (required = false) String codigoDescuento) {
         if(alias == null) {
-            return ResponseEntity.badRequest().body("No se ha definido un alias, ingrese un alias antes de continuar");
+            return ResponseEntity.badRequest().header("Error", "No se ha definido un alias, ingrese un alias antes de continuar").build();
         }else
         {
             double totalVenta = 0;
             totalVenta = itemCarritoService.obtenerItemsCarritoPorAlias(alias).stream().mapToDouble(i -> i.getPrecioTotal()).sum();
+            Pedido pedidoCreado = pedidoService.confirmarPedido(alias, codigoDescuento,totalVenta);
             List<ItemCarrito> itemsCarrito = new ArrayList<>(itemCarritoService.obtenerItemsCarritoPorAlias(alias));
             List<ItemPedido> itemsPedidos = itemsCarrito.stream()
                                            .map(item -> ItemPedido.builder()
+                                           .idProducto(item.getIdProducto())
                                            .nombreProducto(item.getNombreProducto())
                                            .cantidad(item.getCantidad())
                                            .precio(item.getPrecioUnitario())
                                            .alias(item.getAlias())
+                                           .pedido(pedidoCreado)
                                            .build())
                                            .toList();
             itemPedidoService.guardarItemsPedido(itemsPedidos);
             itemCarritoService.vaciarCarrito(alias);
-            return pedidoService.confirmarPedido(alias, codigoDescuento,totalVenta);
+            return ResponseEntity.ok(pedidoCreado);
         }
     }
     @GetMapping("/mostrarPedidos")

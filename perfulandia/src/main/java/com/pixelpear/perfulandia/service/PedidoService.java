@@ -22,57 +22,24 @@ public class PedidoService {
     private final PedidoRepository pedidoRepository;
     private final DescuentoService descuentoService;
 
-    public ResponseEntity<String> confirmarPedido(String alias, String codigoDescuento,double totalVenta) {
-        boolean descuentoValido = false;
-        LocalDate hoy = LocalDate.now();
+    public Pedido confirmarPedido(String alias, String codigoDescuento,double totalVenta) {
         LocalDateTime fechaPedido = LocalDateTime.now();
+        Descuento descuento = descuentoService.buscarDescuentoPorCodigo(codigoDescuento);
 
-        if (codigoDescuento != null) {
-            Descuento descuento = descuentoService.buscarDescuentoPorCodigo(codigoDescuento);
-            if (descuento != null) {
-                descuentoValido = !hoy.isBefore(descuento.getFechaInicio()) && !hoy.isAfter(descuento.getFechaFin());
-                if (descuentoValido) {
-                    //Aplica el descuento
-                    double porcentaje = descuento.getPorcentajeDescuento(); 
-                    double totalConDescuento = totalVenta * (1 - (porcentaje / 100.0));
-                    Pedido pedido = new Pedido();
-                    pedido.setAlias(alias);
-                    pedido.setCodigoDescuento(codigoDescuento);
-                    pedido.setPrecioSinDescuento(totalVenta);
-                    pedido.setPrecioFinal(totalConDescuento);
-                    pedido.setFecha(fechaPedido);
-                    pedidoRepository.save(pedido);
-                    return ResponseEntity.ok("El pedido ha sido confirmado. Descuento aplicado");
-                } 
-                else 
-                {
-                    // El descuento no es válido, está fuera de la fecha
-                    Pedido pedido = new Pedido();
-                    pedido.setAlias(alias);
-                    pedido.setCodigoDescuento(codigoDescuento);
-                    pedido.setPrecioSinDescuento(totalVenta);
-                    pedido.setPrecioFinal(totalVenta);
-                    pedido.setFecha(fechaPedido);
-                    pedidoRepository.save(pedido);
-                    return ResponseEntity.ok("El pedido ha sido confirmado. Descuento no aplicado: fuera de la fecha de validez");
-                }
-            }
-            else
-            {
-                //El descuento no es valido, no existe
-                Pedido pedido = new Pedido();
-                pedido.setAlias(alias);
-                pedido.setCodigoDescuento(codigoDescuento);
-                pedido.setPrecioSinDescuento(totalVenta);
-                pedido.setPrecioFinal(totalVenta);
-                pedido.setFecha(fechaPedido);
-                pedidoRepository.save(pedido);
-                return ResponseEntity.ok("El pedido ha sido confirmado. Descuento no aplicado: no se encontro uno con ese codigo");
-            }
+        if(descuento.getCodigoDescuento().equals(codigoDescuento)) {
+            double porcentaje = descuento.getPorcentajeDescuento();
+            double totalConDescuento = totalVenta * (1 - (porcentaje / 100.0));
+            Pedido pedido = new Pedido();
+            pedido.setAlias(alias);
+            pedido.setCodigoDescuento(codigoDescuento);
+            pedido.setPrecioSinDescuento(totalVenta);
+            pedido.setPrecioFinal(totalConDescuento);
+            pedido.setFecha(fechaPedido);
+            pedidoRepository.save(pedido);
+            return pedido;
         }
         else
         {
-            //Descuento no aplica, no hay uno ingresado
             Pedido pedido = new Pedido();
             pedido.setAlias(alias);
             pedido.setCodigoDescuento(codigoDescuento);
@@ -80,7 +47,8 @@ public class PedidoService {
             pedido.setPrecioFinal(totalVenta);
             pedido.setFecha(fechaPedido);
             pedidoRepository.save(pedido);
-            return ResponseEntity.ok("El pedido ha sido confirmado. Descuento no aplicado: no se ingreso uno");
+            return pedido;
+
         }
     }
 
