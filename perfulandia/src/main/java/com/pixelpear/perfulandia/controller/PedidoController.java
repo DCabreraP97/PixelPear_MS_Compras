@@ -36,8 +36,8 @@ public class PedidoController {
             return ResponseEntity.badRequest().body("No se ha definido un alias, ingrese un alias antes de continuar");
         }else
         {
-            Long totalVenta = 0L;
-            totalVenta = itemCarritoService.obtenerItemsCarritoPorAlias(alias).stream().mapToLong(i -> i.getPrecioTotal()).sum();
+            double totalVenta = 0;
+            totalVenta = itemCarritoService.obtenerItemsCarritoPorAlias(alias).stream().mapToDouble(i -> i.getPrecioTotal()).sum();
             List<ItemCarrito> itemsCarrito = new ArrayList<>(itemCarritoService.obtenerItemsCarritoPorAlias(alias));
             List<ItemPedido> itemsPedidos = itemsCarrito.stream()
                                            .map(item -> ItemPedido.builder()

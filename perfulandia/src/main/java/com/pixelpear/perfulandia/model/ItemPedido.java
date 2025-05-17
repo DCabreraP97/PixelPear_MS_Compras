@@ -25,7 +25,7 @@ public class ItemPedido {
     private String alias;
     private Long idProducto;
     private String nombreProducto;
-    private Long precio;
+    private double precio;
     private Integer cantidad;
 
     @ManyToOne

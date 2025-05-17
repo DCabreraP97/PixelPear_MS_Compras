@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 // Falta hacer controller de pedidos,service pedido,repository pedido,model itemPedido,model facturas,etc y implementar los cupones(clases con descuento) en pedidos
 // Falta implementar los dtos 
+//Cambiar datos a Double, decimal
 
 public class CarritoController {
 
@@ -77,7 +78,7 @@ public class CarritoController {
         } else {
             if (producto != null && producto.getStock() >= cantidad) {
                 producto.setStock(producto.getStock() - cantidad);
-                Long precioTotal = producto.getPrecio().longValue() * cantidad;
+                double precioTotal = producto.getPrecio() * cantidad;
                 itemCarritoService.agregarItemCarrito(new ItemCarrito(idProducto, alias, producto.getNombre(), producto.getPrecio(), cantidad, precioTotal));
                 return ResponseEntity.ok("El producto " + producto.getNombre() + " ha sido agregado al carrito. El Precio total seria: $" + precioTotal);
             } else {

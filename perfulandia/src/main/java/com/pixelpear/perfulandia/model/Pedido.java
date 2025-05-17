@@ -26,8 +26,8 @@ public class Pedido {
     private Long idPedido;
     private String alias;
     private String codigoDescuento;
-    private Long precioSinDescuento;
-    private Long precioFinal;
+    private double precioSinDescuento;
+    private double precioFinal;
     private LocalDateTime fecha;
 
     @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL)

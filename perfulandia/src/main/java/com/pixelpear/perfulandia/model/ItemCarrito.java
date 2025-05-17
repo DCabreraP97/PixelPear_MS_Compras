@@ -21,11 +21,11 @@ public class ItemCarrito {
     private Long idProducto;
     private String alias;
     private String nombreProducto;
-    private Long precioUnitario;
+    private double precioUnitario;
     private Integer cantidad;
-    private Long precioTotal;
+    private double precioTotal;
 
-    public ItemCarrito(Long idProducto, String alias, String nombreProducto, Long precioUnitario, Integer cantidad, Long precioTotal) {
+    public ItemCarrito(Long idProducto, String alias, String nombreProducto, double precioUnitario, Integer cantidad, double precioTotal) {
         this.idProducto = idProducto;
         this.alias = alias;
         this.nombreProducto = nombreProducto;

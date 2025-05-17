@@ -22,7 +22,7 @@ public class PedidoService {
     private final PedidoRepository pedidoRepository;
     private final DescuentoService descuentoService;
 
-    public ResponseEntity<String> confirmarPedido(String alias, String codigoDescuento,Long totalVenta) {
+    public ResponseEntity<String> confirmarPedido(String alias, String codigoDescuento,double totalVenta) {
         boolean descuentoValido = false;
         LocalDate hoy = LocalDate.now();
         LocalDateTime fechaPedido = LocalDateTime.now();
@@ -34,8 +34,7 @@ public class PedidoService {
                 if (descuentoValido) {
                     //Aplica el descuento
                     double porcentaje = descuento.getPorcentajeDescuento(); 
-                    double totalConDescuentoDouble = totalVenta * (1 - (porcentaje / 100.0));
-                    Long totalConDescuento = (long) totalConDescuentoDouble;
+                    double totalConDescuento = totalVenta * (1 - (porcentaje / 100.0));
                     Pedido pedido = new Pedido();
                     pedido.setAlias(alias);
                     pedido.setCodigoDescuento(codigoDescuento);
