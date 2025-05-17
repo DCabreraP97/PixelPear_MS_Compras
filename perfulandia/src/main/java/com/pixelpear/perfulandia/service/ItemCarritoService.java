@@ -32,4 +32,24 @@ public class ItemCarritoService {
         itemCarritoRepository.deleteByAlias(alias);
     }
 
+    public boolean actualizarStock(String alias, Long idProducto, Integer cantidad, String operacion) {
+        if(operacion.equals("sumar")) {
+            ItemCarrito itemCarrito = itemCarritoRepository.findByIdProductoAndAlias(idProducto, alias).orElse(null);
+            if (itemCarrito != null) {
+                itemCarrito.setCantidad(itemCarrito.getCantidad() + cantidad);
+                itemCarritoRepository.save(itemCarrito);
+                return true;
+            }
+            else return false;
+        } else if (operacion.equals("restar")) {
+            ItemCarrito itemCarrito = itemCarritoRepository.findByIdProductoAndAlias(idProducto, alias).orElse(null);
+            if (itemCarrito != null && itemCarrito.getCantidad() >= cantidad) {
+                itemCarrito.setCantidad(itemCarrito.getCantidad() - cantidad);
+                itemCarritoRepository.save(itemCarrito);
+                return true;
+            }
+            else return false;
+        } else return false;
+    }
+
 }

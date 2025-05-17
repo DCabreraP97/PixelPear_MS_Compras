@@ -115,6 +115,35 @@ public class CarritoController {
             }
         }
     }
+    @PostMapping("/actualizarStock/{idProducto}")
+    public ResponseEntity<String> actualizarStock(@PathVariable Long idProducto, @RequestParam Integer cantidad,@RequestParam String operacion) {
+        if(alias == null) {
+                return ResponseEntity.badRequest().body("No se ha definido un alias, ingrese un alias antes de continuar");
+            }
+            else{
+                boolean exito = false;
+                exito = itemCarritoService.actualizarStock(alias,idProducto, cantidad, operacion);
+                if(exito == true){
+                    if(operacion.equals("sumar")) {
+                        listaProductos.stream()
+                            .filter(p -> p.getIdProducto().equals(idProducto))
+                            .findFirst()
+                            .ifPresent(p -> p.setStock(p.getStock() + cantidad));
+                        return ResponseEntity.ok("Se han sumado " + cantidad + " unidades al producto con id " + idProducto);
+                    } else if (operacion.equals("restar")) {
+                        listaProductos.stream()
+                            .filter(p -> p.getIdProducto().equals(idProducto))
+                            .findFirst()
+                            .ifPresent(p -> p.setStock(p.getStock() - cantidad));
+                        return ResponseEntity.ok("Se han restado " + cantidad + " unidades al producto con id " + idProducto);
+                    } else {
+                        return ResponseEntity.badRequest().body("No se ha podido actualizar el stock");
+                    }
+                } else {
+                    return ResponseEntity.badRequest().body("Hubo un error al actualizar el stock");
+                }
+            }
+    }
 
 
     @GetMapping("/alias")
