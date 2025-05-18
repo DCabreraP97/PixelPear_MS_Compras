@@ -28,7 +28,6 @@ public class PedidoService {
 
         Pedido pedido = new Pedido();
         pedido.setAlias(alias);
-        pedido.setCodigoDescuento(codigoDescuento);
         pedido.setPrecioSinDescuento(totalVenta);
         pedido.setFecha(fechaPedido);
 
@@ -36,8 +35,10 @@ public class PedidoService {
             double porcentaje = descuento.getPorcentajeDescuento();
             double totalConDescuento = totalVenta * (1 - (porcentaje / 100.0));
             pedido.setPrecioFinal(totalConDescuento);
+            pedido.setCodigoDescuento(codigoDescuento);
         } else {
             pedido.setPrecioFinal(totalVenta);
+            pedido.setCodigoDescuento("NO APLICA");
     }
 
     pedidoRepository.save(pedido);
