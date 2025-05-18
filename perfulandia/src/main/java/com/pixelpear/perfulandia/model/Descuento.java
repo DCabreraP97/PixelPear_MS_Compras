@@ -2,6 +2,7 @@ package com.pixelpear.perfulandia.model;
 
 import java.time.LocalDate;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -21,7 +22,10 @@ public class Descuento {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idDescuento;
+
+    @Column(name = "codigo_descuento", unique = true)
     private String codigoDescuento;
+
     private String descripcion;
     private double porcentajeDescuento;
     private LocalDate fechaInicio;
