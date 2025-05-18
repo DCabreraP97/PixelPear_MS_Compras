@@ -22,9 +22,9 @@ public class PedidoService {
     private final PedidoRepository pedidoRepository;
     private final DescuentoService descuentoService;
 
-    public Pedido confirmarPedido(String alias, String codigoDescuento, double totalVenta) {
+    public Pedido confirmarPedido(String alias, String codigo_descuento, double totalVenta) {
         LocalDateTime fechaPedido = LocalDateTime.now();
-        Descuento descuento = descuentoService.buscarDescuentoPorCodigo(codigoDescuento);
+        Descuento descuento = descuentoService.buscarDescuentoPorCodigo(codigo_descuento);
 
         Pedido pedido = new Pedido();
         pedido.setAlias(alias);
@@ -32,14 +32,14 @@ public class PedidoService {
         pedido.setFecha(fechaPedido);
 
         if (descuento != null) {
-            if(descuento.getCodigoDescuento().equalsIgnoreCase(codigoDescuento) &&
+            if(descuento.getCodigoDescuento().equalsIgnoreCase(codigo_descuento) &&
                !LocalDate.now().isBefore(descuento.getFechaInicio()) &&
                !LocalDate.now().isAfter(descuento.getFechaFin()))
             {
                 double porcentaje = descuento.getPorcentajeDescuento();
                 double totalConDescuento = totalVenta * (1 - (porcentaje / 100.0));
                 pedido.setPrecioFinal(totalConDescuento);
-                pedido.setCodigoDescuento(codigoDescuento);
+                pedido.setCodigoDescuento(descuento.getCodigoDescuento());
             }
             else {
                 pedido.setPrecioFinal(totalVenta);

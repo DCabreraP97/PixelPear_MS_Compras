@@ -14,7 +14,7 @@ import lombok.RequiredArgsConstructor;
 public class DescuentoService {
     private final DescuentoRepository descuentoRepository;
     public Descuento buscarDescuentoPorCodigo(String codigoDescuento) {
-        return descuentoRepository.findByCodigoDescuento(codigoDescuento);
+        return descuentoRepository.findByCodigoDescuentoIgnoreCase(codigoDescuento);
     }
 
 }
