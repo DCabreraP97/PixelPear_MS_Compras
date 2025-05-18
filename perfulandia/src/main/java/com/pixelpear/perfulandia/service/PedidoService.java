@@ -22,35 +22,27 @@ public class PedidoService {
     private final PedidoRepository pedidoRepository;
     private final DescuentoService descuentoService;
 
-    public Pedido confirmarPedido(String alias, String codigoDescuento,double totalVenta) {
+    public Pedido confirmarPedido(String alias, String codigoDescuento, double totalVenta) {
         LocalDateTime fechaPedido = LocalDateTime.now();
         Descuento descuento = descuentoService.buscarDescuentoPorCodigo(codigoDescuento);
 
-        if(descuento.getCodigoDescuento().equals(codigoDescuento)) {
+        Pedido pedido = new Pedido();
+        pedido.setAlias(alias);
+        pedido.setCodigoDescuento(codigoDescuento);
+        pedido.setPrecioSinDescuento(totalVenta);
+        pedido.setFecha(fechaPedido);
+
+        if (descuento != null) {
             double porcentaje = descuento.getPorcentajeDescuento();
             double totalConDescuento = totalVenta * (1 - (porcentaje / 100.0));
-            Pedido pedido = new Pedido();
-            pedido.setAlias(alias);
-            pedido.setCodigoDescuento(codigoDescuento);
-            pedido.setPrecioSinDescuento(totalVenta);
             pedido.setPrecioFinal(totalConDescuento);
-            pedido.setFecha(fechaPedido);
-            pedidoRepository.save(pedido);
-            return pedido;
-        }
-        else
-        {
-            Pedido pedido = new Pedido();
-            pedido.setAlias(alias);
-            pedido.setCodigoDescuento(codigoDescuento);
-            pedido.setPrecioSinDescuento(totalVenta);
+        } else {
             pedido.setPrecioFinal(totalVenta);
-            pedido.setFecha(fechaPedido);
-            pedidoRepository.save(pedido);
-            return pedido;
-
-        }
     }
+
+    pedidoRepository.save(pedido);
+    return pedido;
+}
 
     public List<Pedido> mostrarPedidosPorAlias(String alias) {
         List<Pedido> listaPedidos = pedidoRepository.findByAlias(alias);
