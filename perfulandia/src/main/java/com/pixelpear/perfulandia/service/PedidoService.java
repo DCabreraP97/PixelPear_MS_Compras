@@ -32,10 +32,19 @@ public class PedidoService {
         pedido.setFecha(fechaPedido);
 
         if (descuento != null) {
-            double porcentaje = descuento.getPorcentajeDescuento();
-            double totalConDescuento = totalVenta * (1 - (porcentaje / 100.0));
-            pedido.setPrecioFinal(totalConDescuento);
-            pedido.setCodigoDescuento(codigoDescuento);
+            if(descuento.getCodigoDescuento().equalsIgnoreCase(codigoDescuento) &&
+               !LocalDate.now().isBefore(descuento.getFechaInicio()) &&
+               !LocalDate.now().isAfter(descuento.getFechaFin()))
+            {
+                double porcentaje = descuento.getPorcentajeDescuento();
+                double totalConDescuento = totalVenta * (1 - (porcentaje / 100.0));
+                pedido.setPrecioFinal(totalConDescuento);
+                pedido.setCodigoDescuento(codigoDescuento);
+            }
+            else {
+                pedido.setPrecioFinal(totalVenta);
+                pedido.setCodigoDescuento("NO APLICA");
+            }
         } else {
             pedido.setPrecioFinal(totalVenta);
             pedido.setCodigoDescuento("NO APLICA");
