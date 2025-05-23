@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 // Falta hacer controller de pedidos,service pedido,repository pedido,model itemPedido,model facturas,etc y implementar los cupones(clases con descuento) en pedidos
 // Falta implementar los dtos 
 //Cambiar datos a Double, decimal
+//linux
 
 public class CarritoController {
 
