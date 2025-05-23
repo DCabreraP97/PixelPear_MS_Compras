@@ -21,14 +21,18 @@ import lombok.NoArgsConstructor;
 public class Descuento {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_descuento")
     private Long idDescuento;
 
-    @Column(name = "codigoDescuento", unique = true)
+    @Column(name = "codigo_descuento", unique = true)
     private String codigoDescuento;
-
+    @Column(name = "descripcion")
     private String descripcion;
+    @Column(name = "porcentaje_descuento")
     private double porcentajeDescuento;
+    @Column(name = "fecha_inicio")
     private LocalDate fechaInicio;
+    @Column(name = "fecha_fin")
     private LocalDate fechaFin;
 
 }
