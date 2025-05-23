@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.pixelpear.perfulandia.model.ItemCarrito;
 import com.pixelpear.perfulandia.model.ItemPedido;
 import com.pixelpear.perfulandia.model.Pedido;
+import com.pixelpear.perfulandia.service.FacturaService;
 import com.pixelpear.perfulandia.service.ItemCarritoService;
 import com.pixelpear.perfulandia.service.ItemPedidoService;
 import com.pixelpear.perfulandia.service.PedidoService;
@@ -27,7 +28,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 public class PedidoController {
     private final PedidoService pedidoService;
     private final ItemCarritoService itemCarritoService;
-    //private final DescuentoService descuentoService;
+    private final FacturaService facturaService;
     private final ItemPedidoService itemPedidoService;
     private String alias;
     @PostMapping("/confirmar")
@@ -52,6 +53,10 @@ public class PedidoController {
                                            .toList();
             itemPedidoService.guardarItemsPedido(itemsPedidos);
             itemCarritoService.vaciarCarrito(alias);
+            if(pedidoCreado != null)
+            {
+                facturaService.generarFactura(pedidoCreado);
+            }
             return ResponseEntity.ok(pedidoCreado);
         }
     }
