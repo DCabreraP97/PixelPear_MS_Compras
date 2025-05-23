@@ -7,5 +7,5 @@ import com.pixelpear.perfulandia.model.Descuento;
 
 @Repository
 public interface DescuentoRepository extends JpaRepository<Descuento, Long> {
-    Descuento findByCodigoDescuentoIgnoreCase(String codigo_descuento);
+    Descuento findByCodigoDescuentoIgnoreCase(String codigoDescuento);
 }

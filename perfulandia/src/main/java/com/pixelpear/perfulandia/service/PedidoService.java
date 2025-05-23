@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -21,10 +23,12 @@ import lombok.RequiredArgsConstructor;
 public class PedidoService {
     private final PedidoRepository pedidoRepository;
     private final DescuentoService descuentoService;
+    private static final Logger logger = LoggerFactory.getLogger(PedidoService.class);
 
-    public Pedido confirmarPedido(String alias, String codigo_descuento, double totalVenta) {
+    public Pedido confirmarPedido(String alias, String codigoDescuento, double totalVenta) {
         LocalDateTime fechaPedido = LocalDateTime.now();
-        Descuento descuento = descuentoService.buscarDescuentoPorCodigo(codigo_descuento);
+        Descuento descuento = descuentoService.buscarDescuentoPorCodigo(codigoDescuento);
+        logger.info("Descuento encontrado: {}", descuento);
 
         Pedido pedido = new Pedido();
         pedido.setAlias(alias);
@@ -32,7 +36,7 @@ public class PedidoService {
         pedido.setFecha(fechaPedido);
 
         if (descuento != null) {
-            if(descuento.getCodigoDescuento().equalsIgnoreCase(codigo_descuento) &&
+            if(descuento.getCodigoDescuento().equalsIgnoreCase(codigoDescuento) &&
                !LocalDate.now().isBefore(descuento.getFechaInicio()) &&
                !LocalDate.now().isAfter(descuento.getFechaFin()))
             {

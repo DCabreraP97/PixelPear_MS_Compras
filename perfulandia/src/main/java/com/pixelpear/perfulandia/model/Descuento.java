@@ -23,7 +23,7 @@ public class Descuento {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idDescuento;
 
-    @Column(name = "codigo_descuento", unique = true)
+    @Column(name = "codigoDescuento", unique = true)
     private String codigoDescuento;
 
     private String descripcion;
