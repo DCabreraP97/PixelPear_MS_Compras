@@ -25,7 +25,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RestController
 @RequestMapping("/carrito")
 @RequiredArgsConstructor
-
+// localhost:8080/api/v1/carrito
+// localhost:8080/api/v1/carrito/mostrarItems
+// localhost:8080/api/v1/carrito/agregarItem
+// localhost:8080/api/v1/carrito/eliminar/{idProducto}
 public class CarritoController {
 
 
