@@ -26,11 +26,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/carrito")
 @RequiredArgsConstructor
 
-// Falta hacer controller de pedidos,service pedido,repository pedido,model itemPedido,model facturas,etc y implementar los cupones(clases con descuento) en pedidos
-// Falta implementar los dtos 
-//Cambiar datos a Double, decimal
-//linux
-
 public class CarritoController {
 
 
@@ -48,15 +43,7 @@ public class CarritoController {
     ));
     private String alias;
     private final ItemCarritoService itemCarritoService;
-          
-
-    // Mejorar este endpoint para que devuelva un mensaje de error si el alias es null
-    // y que devuelva un mensaje de error si no hay productos en el carrito
-
-    //Cambiar este los parametros de este endpoint para dejarlo vacio y que continue con el alias seteado antes
-    //Si no encuentra alias en la linea 61 devuelve un mensaje de error, borrar linea 57 a 59 luego
-
-    //Ponerle el @Column a las entity del model
+        
     @GetMapping("/mostrarItems")
     public ResponseEntity<List<ItemCarrito>> obtenerCarritoUsuario() {
         if (alias == null) {

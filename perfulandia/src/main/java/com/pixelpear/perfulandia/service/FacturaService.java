@@ -18,8 +18,6 @@ public class FacturaService {
     private final FacturaRepository facturaRepository;
 
     public void generarFactura(Pedido pedidoCreado) {
-        // Lógica para generar la factura a partir del pedido
-        // Crear una nueva factura y traspasar los datos del pedido
         LocalDate fechaFactura = pedidoCreado.getFecha().toLocalDate();
         Factura factura = new Factura();
         factura.setAlias(pedidoCreado.getAlias());

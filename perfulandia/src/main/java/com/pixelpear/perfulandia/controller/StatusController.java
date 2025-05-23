@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class StatusController {
     @GetMapping("/status")
     public ResponseEntity<String> getStatus() {
-        return ResponseEntity.ok("MS-Ventas está operativo 🥂");
+        return ResponseEntity.ok("MS-Compras está operativo 🥂");
     }
     
 }
