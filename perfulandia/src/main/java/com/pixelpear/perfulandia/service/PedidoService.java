@@ -27,7 +27,8 @@ public class PedidoService {
 
     public Pedido confirmarPedido(String alias, String codigoDescuento, double totalVenta) {
         LocalDateTime fechaPedido = LocalDateTime.now();
-        Descuento descuento = descuentoService.buscarDescuentoPorCodigo(codigoDescuento);
+        logger.info("CODIGO DEL DESCUENTO : {}", codigoDescuento);
+        Descuento descuento = descuentoService.buscarDescuentoPorCodigo(codigoDescuento.trim());
         logger.info("Descuento encontrado: {}", descuento);
 
         Pedido pedido = new Pedido();
