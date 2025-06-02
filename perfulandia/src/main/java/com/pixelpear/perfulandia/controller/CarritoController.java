@@ -33,7 +33,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 // localhost:8080/api/v1/pedido/confirmar?codigoDescuento=SUPEROFERTA
 // localhost:8080/api/v1/pedido/cambiarAlias POST
-// localhost:8080/api/v1/pedido/mostrarPedidos GET
+// localhost:8080/api/v1/pedido/mostrarPedidos GETa
 public class CarritoController {
 
 
