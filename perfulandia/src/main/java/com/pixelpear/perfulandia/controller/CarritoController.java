@@ -34,6 +34,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 // localhost:8080/api/v1/pedido/confirmar?codigoDescuento=SUPEROFERTA
 // localhost:8080/api/v1/pedido/cambiarAlias POST
 // localhost:8080/api/v1/pedido/mostrarPedidos GET
+
+// Version 2
+//Eliminar uso de metodos https en carrito segun alias, el usuario sera uno y anonimo.
+//Recortar pedido y factura. Dejar solo el carrito y la confirmacion de compra.
+//Eliminar factura. Eliminar pedido/metodos o dejar solo generacion de pedidos.
+//Eliminar descuento?
 public class CarritoController {
 
 
