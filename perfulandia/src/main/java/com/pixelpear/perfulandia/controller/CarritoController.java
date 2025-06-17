@@ -35,11 +35,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 // localhost:8080/api/v1/pedido/cambiarAlias POST
 // localhost:8080/api/v1/pedido/mostrarPedidos GET
 
-// Version 2
+// Version A
 //Eliminar uso de metodos https en carrito segun alias, el usuario sera uno y anonimo.
 //Recortar pedido y factura. Dejar solo el carrito y la confirmacion de compra.
 //Eliminar factura. Eliminar pedido/metodos o dejar solo generacion de pedidos.
 //Eliminar descuento?
+
+//1)Dejar carrito para agregar, restar stock de este carrito y eliminar perfumes del carrito. Luego poder confirmar el pedido  
+//2)Dejar bodega para agregar/eliminar/actualizar/leer perfumes en stock 
+//3)Dejar lectura de pedidos y facturas en BodegaController
 public class CarritoController {
 
 
