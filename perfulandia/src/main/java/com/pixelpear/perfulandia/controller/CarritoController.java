@@ -47,19 +47,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class CarritoController {
 
 
-    public List<Producto> listaProductos = new ArrayList<>(List.of(
-        new Producto(1L, "Rosa Mística", 4990L, 10),
-        new Producto(2L, "Luz de Luna", 5990L, 15),
-        new Producto(3L, "Esencia del Alba", 6990L, 20),
-        new Producto(4L, "Brisa Marina", 7990L, 25),
-        new Producto(5L, "Jardín Secreto", 8990L, 30),
-        new Producto(6L, "Fuego Nocturno", 9990L, 12),
-        new Producto(7L, "Cielo Estrellado", 10990L, 18),
-        new Producto(8L, "Aurora Boreal", 11990L, 22),
-        new Producto(9L, "Oasis Tropical", 12990L, 16),
-        new Producto(10L, "Sueño Dorado", 13990L, 14)
-    ));
-    private String alias;
+    public List<ItemCarrito> carritoTemporal = new ArrayList<>();
     private final ItemCarritoService itemCarritoService;
         
     @GetMapping("/mostrarItems")
@@ -150,32 +138,5 @@ public class CarritoController {
                     return ResponseEntity.badRequest().body("Hubo un error al actualizar el stock");
                 }
             }
-    }
-
-
-    @GetMapping("/alias")
-    public ResponseEntity<String> aliasActual() {
-        return ResponseEntity.ok("El alias del usuario actual es " + alias);
-    }
-    
-    @PostMapping("/cambiarAlias")
-    public ResponseEntity<String> cambiarAlias(@RequestParam String aliasNuevo) {
-        this.alias = aliasNuevo;
-        return ResponseEntity.ok("Alias cambiado a " + alias);
-    }
-    
-    @PostMapping("/listaProductos/agregar")
-    public ResponseEntity<String> agregarProductoLista(@RequestBody Producto producto) {
-        listaProductos.add(producto);
-        return ResponseEntity.ok("El producto ha sido agregado " + producto);
-    }
-    @GetMapping("/listaProductos")
-    public ResponseEntity<List<Producto>> obtenerListaProductos() {
-        return ResponseEntity.ok(listaProductos);
-    }
-    @DeleteMapping("/listaProductos/eliminar")
-    public ResponseEntity<String> eliminarProductoLista(@RequestParam Long id) {
-        listaProductos.removeIf(producto -> producto.getIdProducto().equals(id));
-        return ResponseEntity.ok("El producto ha sido eliminado");
     }
 }
