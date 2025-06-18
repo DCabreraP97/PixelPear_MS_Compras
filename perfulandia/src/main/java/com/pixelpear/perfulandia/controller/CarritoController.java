@@ -31,6 +31,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 //POST localhost:8080/api/v2/carrito/agregarUnidades?idPerfume=5&cantidad=2
 //POST localhost:8080/api/v2/carrito/restarUnidades?idPerfume=5&cantidadAReducir=1
 //POST localhost:8080/api/v2/carrito/confirmar?codigoDescuento=OFERTONJUNIO
+//
+// Falta implementar pruebas unitarias. Usar JUNIT y mockito.  POR HACER
+// Falta usar swagger para documentar y hateoas para navegar por la API. POR HACER
+// usar Spring Boot Test? POR HACER
+//Hacer pruebas unitarias de los controller y service POR HACER
 
 public class CarritoController {
 
