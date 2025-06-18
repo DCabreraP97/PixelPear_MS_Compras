@@ -36,6 +36,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 //1)Dejar carrito para agregar, restar stock de este carrito y eliminar perfumes del carrito. Luego poder confirmar el pedido  
 //2)Dejar bodega para agregar/eliminar/actualizar/leer perfumes en stock 
 //3)Dejar lectura de pedidos y facturas en BodegaController
+//Falta confirmar feedback de aplicar descuento. 
+//Recortar deciamales a la hora de guardar precios y fecha -> hora.
+// Falta hacer bodegaControlador CRUD + mostrar pedido/factura.
+
 public class CarritoController {
 
 

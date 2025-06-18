@@ -35,7 +35,7 @@ public class PedidoService {
 
         LocalDateTime fechaPedido = LocalDateTime.now();
 
-        Descuento descuento = descuentoService.buscarDescuentoPorCodigo(codigoDescuento.trim());
+        Descuento descuento = descuentoService.buscarDescuentoPorCodigo(codigoDescuento);
 
         Pedido pedido = new Pedido();
         pedido.setPrecioSinDescuento(totalVenta);
