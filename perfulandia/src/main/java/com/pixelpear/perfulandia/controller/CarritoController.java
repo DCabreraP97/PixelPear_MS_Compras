@@ -33,12 +33,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 //Eliminar factura. Eliminar pedido/metodos o dejar solo generacion de pedidos.
 //Eliminar descuento?
 
-//1)Dejar carrito para agregar, restar stock de este carrito y eliminar perfumes del carrito. Luego poder confirmar el pedido  
-//2)Dejar bodega para agregar/eliminar/actualizar/leer perfumes en stock 
-//3)Dejar lectura de pedidos y facturas en BodegaController
-//Falta confirmar feedback de aplicar descuento. 
-//Recortar deciamales a la hora de guardar precios y fecha -> hora.
-// Falta hacer bodegaControlador CRUD + mostrar pedido/factura.
+//1)Dejar carrito para agregar, restar stock de este carrito y eliminar perfumes del carrito. Luego poder confirmar el pedido  HECHO
+//2)Dejar bodega para agregar/eliminar/actualizar/leer perfumes en stock HECHO
+//3)Dejar lectura de pedidos y facturas en BodegaController HECHO
+//Falta confirmar feedback de aplicar descuento.  FALTA**
+//Recortar deciamales a la hora de guardar precios y fecha -> hora. FALTA**
+// Falta hacer bodegaControlador CRUD + mostrar pedido/factura. HECHO
+//Falta eliminar mensajes y hacer más legible el codigo. FALTA**
 
 public class CarritoController {
 
