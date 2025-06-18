@@ -3,9 +3,9 @@ package com.pixelpear.perfulandia.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.pixelpear.perfulandia.model.Pedido;
+import com.pixelpear.perfulandia.model.Perfume;
 
 @Repository
-public interface PedidoRepository extends JpaRepository<Pedido, Long> {
-    
+public interface PerfumeRepository extends JpaRepository<Perfume, Long> {
+    Perfume findByIdPerfume(Long idPerfume);
 }

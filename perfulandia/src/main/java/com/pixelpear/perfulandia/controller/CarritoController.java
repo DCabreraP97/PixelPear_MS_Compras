@@ -5,19 +5,19 @@ import java.util.List;
 
 import org.springframework.web.bind.annotation.RestController;
 
-import com.pixelpear.perfulandia.model.ItemCarrito;
-import com.pixelpear.perfulandia.model.Producto;
-import com.pixelpear.perfulandia.service.ItemCarritoService;
+import com.pixelpear.perfulandia.model.Pedido;
+import com.pixelpear.perfulandia.model.Perfume;
+import com.pixelpear.perfulandia.service.FacturaService;
+import com.pixelpear.perfulandia.service.PedidoService;
+import com.pixelpear.perfulandia.service.PerfumeService;
 
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 
@@ -25,15 +25,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RestController
 @RequestMapping("/carrito")
 @RequiredArgsConstructor
-// localhost:8080/api/v1/carrito/mostrarItems GET
-// localhost:8080/api/v1/carrito/agregarItem POST
-// localhost:8080/api/v1/carrito/eliminar/{idProducto} DELETE
-// localhost:8080/api/v1/carrito/alias GET
-// localhost:8080/api/v1/carrito/cambiarAlias POST
-
-// localhost:8080/api/v1/pedido/confirmar?codigoDescuento=SUPEROFERTA
-// localhost:8080/api/v1/pedido/cambiarAlias POST
-// localhost:8080/api/v1/pedido/mostrarPedidos GET
 
 // Version A
 //Eliminar uso de metodos https en carrito segun alias, el usuario sera uno y anonimo.
@@ -47,96 +38,101 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class CarritoController {
 
 
-    public List<ItemCarrito> carritoTemporal = new ArrayList<>();
-    private final ItemCarritoService itemCarritoService;
+    public List<Perfume> carritoTemporal = new ArrayList<>();
+    private final PerfumeService perfumeService;
+    private final PedidoService pedidoService;
+    private final FacturaService facturaService;
         
-    @GetMapping("/mostrarItems")
-    public ResponseEntity<List<ItemCarrito>> obtenerCarritoUsuario() {
-        if (alias == null) {
-            return ResponseEntity.badRequest().body(null);
+    @GetMapping("/mostrar")
+    public ResponseEntity<List<Perfume>> mostrarItemsCarrito() {
+        return ResponseEntity.ok(carritoTemporal);
+    }
+
+    @PostMapping("/agregarUnidades")
+    public ResponseEntity<String> agregarUnidadesCarrito(@RequestParam Long idPerfume, @RequestParam Integer cantidad) {
+        if(perfumeService.existePerfume(idPerfume)) 
+        {
+            Perfume perfumeAComprar = perfumeService.buscarPerfumePorId(idPerfume);
+
+            if(cantidad <= perfumeAComprar.getStock()) 
+            {
+                carritoTemporal.add(perfumeAComprar);
+                return ResponseEntity.ok("El perfume ha sido agregado al carrito.");
+            }
+            else
+            {
+                return ResponseEntity.badRequest().body("No hay suficiente stock para el perfume solicitado.");
+            }
         }
-        else{
-            List<ItemCarrito> listaRetorno = new ArrayList<>(itemCarritoService.obtenerItemsCarritoPorAlias(alias));
-            return ResponseEntity.ok(listaRetorno);
+        else
+        {
+            return ResponseEntity.badRequest().body("El id del perfume no existe");
         }
     }
 
-    @PostMapping("/agregarItem")
-    public ResponseEntity<String> agregarProductoCarrito(@RequestParam Long idProducto, @RequestParam Integer cantidad) {
-        Producto producto = listaProductos.stream()
-                .filter(p -> p.getIdProducto().equals(idProducto))
-                .findFirst()
-                .orElse(null);
-        if(alias == null) {
-            return ResponseEntity.badRequest().body("No se ha definido un alias, ingrese un alias antes de continuar");
-        } else {
-            if (producto != null && producto.getStock() >= cantidad) {
-                producto.setStock(producto.getStock() - cantidad);
-                double precioTotal = producto.getPrecio() * cantidad;
-                itemCarritoService.agregarItemCarrito(new ItemCarrito(idProducto, alias, producto.getNombre(), producto.getPrecio(), cantidad, precioTotal));
-                return ResponseEntity.ok("El producto " + producto.getNombre() + " ha sido agregado al carrito. El Precio total seria: $" + precioTotal);
-            } else {
-                return ResponseEntity.badRequest().body("No hay suficiente stock para el producto solicitado.");
-            }
-        }
-    }
-
-    @DeleteMapping("eliminar/carrito")
-    public ResponseEntity<String> vaciarCarrito() {
-        if(alias == null) {
-            return ResponseEntity.badRequest().body("No se ha definido un alias, ingrese un alias antes de continuar");
-        }else{
-            itemCarritoService.vaciarCarrito(alias);
-            return ResponseEntity.ok("El carrito ha sido vaciado");
-        }
-    }
-
-    @DeleteMapping("/eliminar/{idProducto}")
-    public ResponseEntity<String> eliminarProductoCarrito(@PathVariable Long idProducto) {
-        if(alias == null) {
-            return ResponseEntity.badRequest().body("No se ha definido un alias, ingrese un alias antes de continuar");
-        }else{
-            List<ItemCarrito> itemsCarrito = itemCarritoService.obtenerItemsCarritoPorAlias(alias);
-            ItemCarrito itemCarrito = itemsCarrito.stream()
-                .filter(p -> p.getIdProducto().equals(idProducto))
-                .findFirst()
-                .orElse(null);
-            if(itemCarrito != null){
-                itemCarritoService.eliminarItemCarrito(idProducto, alias);
-                return ResponseEntity.ok("El producto ha sido eliminado del carrito");
-            }
-            else{
-                return ResponseEntity.badRequest().body("No se ha encontrado el producto en el carrito");
-            }
-        }
-    }
-    @PostMapping("/actualizarStock/{idProducto}")
-    public ResponseEntity<String> actualizarStock(@PathVariable Long idProducto, @RequestParam Integer cantidad,@RequestParam String operacion) {
-        if(alias == null) {
-                return ResponseEntity.badRequest().body("No se ha definido un alias, ingrese un alias antes de continuar");
-            }
-            else{
-                boolean exito = false;
-                exito = itemCarritoService.actualizarStock(alias,idProducto, cantidad, operacion);
-                if(exito == true){
-                    if(operacion.equals("sumar")) {
-                        listaProductos.stream()
-                            .filter(p -> p.getIdProducto().equals(idProducto))
-                            .findFirst()
-                            .ifPresent(p -> p.setStock(p.getStock() + cantidad));
-                        return ResponseEntity.ok("Se han sumado " + cantidad + " unidades al producto con id " + idProducto);
-                    } else if (operacion.equals("restar")) {
-                        listaProductos.stream()
-                            .filter(p -> p.getIdProducto().equals(idProducto))
-                            .findFirst()
-                            .ifPresent(p -> p.setStock(p.getStock() - cantidad));
-                        return ResponseEntity.ok("Se han restado " + cantidad + " unidades al producto con id " + idProducto);
-                    } else {
-                        return ResponseEntity.badRequest().body("No se ha podido actualizar el stock");
+    @PostMapping("/restarUnidades")
+    public ResponseEntity<String> restarUnidadesCarrito(@RequestParam Long idPerfume, @RequestParam Integer cantidad) {
+        if(perfumeService.existePerfume(idPerfume)) 
+        {
+            for (Perfume perfumeCarrito : carritoTemporal) {
+                if(perfumeCarrito.getIdPerfume().equals(idPerfume)) 
+                {
+                    if(cantidad <= perfumeCarrito.getStock()) 
+                    {
+                        if (cantidad == perfumeCarrito.getStock()) 
+                        {
+                            carritoTemporal.remove(perfumeCarrito);
+                            return ResponseEntity.ok("El perfume ha sido eliminado del carrito.");
+                        } 
+                        else 
+                        {
+                            perfumeCarrito.setStock(perfumeCarrito.getStock() - cantidad);
+                            return ResponseEntity.ok("La cantidad del perfume ha sido restada del carrito.");
+                        }
+                    } 
+                    else 
+                    {
+                        return ResponseEntity.badRequest().body("La cantidad a restar es mayor que la cantidad en el carrito. Cantidad actual del carrito: " + perfumeCarrito.getStock() + " Cantidad a eliminar: " + cantidad);
                     }
-                } else {
-                    return ResponseEntity.badRequest().body("Hubo un error al actualizar el stock");
                 }
             }
+            return ResponseEntity.badRequest().body("El perfume no se encuentra en el carrito.");
+        } 
+        else 
+        {
+            return ResponseEntity.badRequest().body("El id del perfume no existe");
+        }
     }
+
+    @PostMapping("/confirmar")
+    public ResponseEntity<String> confirmarCompra(@RequestParam(required = false) String codigoDescuento) {
+        if (carritoTemporal.isEmpty()) {
+            return ResponseEntity.badRequest().body("El carrito está vacío.");
+        }
+        else
+        {
+            //Se calcula el total de la venta sin descuento
+            double totalVenta = pedidoService.calcularTotalVenta(carritoTemporal);
+
+            //Se crea el pedido y la factura
+            Pedido pedido = pedidoService.confirmarPedido(codigoDescuento, totalVenta);
+            facturaService.generarFactura(pedido);
+
+            //Se actualiza el stock en la base de datos y luego se vacia el carrito
+            for (Perfume perfumeCarrito : carritoTemporal) {
+                Perfume perfumeBD = perfumeService.buscarPerfumePorId(perfumeCarrito.getIdPerfume());
+                perfumeBD.setStock(perfumeBD.getStock() - perfumeCarrito.getStock());
+                perfumeService.guardarPerfume(perfumeBD);
+            }
+            carritoTemporal.clear();
+            return ResponseEntity.ok("La compra ha sido confirmada.");
+        }
+    }
+
+    @DeleteMapping("vaciar")
+    public ResponseEntity<String> vaciarCarrito() {
+        carritoTemporal.clear();
+        return ResponseEntity.ok("El carrito ha sido vaciado");
+    }
+
 }

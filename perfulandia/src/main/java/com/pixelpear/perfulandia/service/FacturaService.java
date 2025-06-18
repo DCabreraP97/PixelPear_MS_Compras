@@ -20,7 +20,6 @@ public class FacturaService {
     public void generarFactura(Pedido pedidoCreado) {
         LocalDate fechaFactura = pedidoCreado.getFecha().toLocalDate();
         Factura factura = new Factura();
-        factura.setAlias(pedidoCreado.getAlias());
         factura.setFecha(fechaFactura);
         factura.setPrecio(pedidoCreado.getPrecioFinal());
         facturaRepository.save(factura);

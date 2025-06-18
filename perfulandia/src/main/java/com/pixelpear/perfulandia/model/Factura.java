@@ -20,7 +20,6 @@ public class Factura {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idFactura;
-    private String alias;
     private LocalDate fecha;
     private double precio;
 }
