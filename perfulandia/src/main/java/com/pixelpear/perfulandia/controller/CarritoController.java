@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import com.pixelpear.perfulandia.dto.ItemCarritoDTO;
 import com.pixelpear.perfulandia.model.Pedido;
 import com.pixelpear.perfulandia.model.Perfume;
 import com.pixelpear.perfulandia.service.FacturaService;
@@ -38,13 +39,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class CarritoController {
 
 
-    public List<Perfume> carritoTemporal = new ArrayList<>();
+    public List<ItemCarritoDTO> carritoTemporal = new ArrayList<>();
     private final PerfumeService perfumeService;
     private final PedidoService pedidoService;
     private final FacturaService facturaService;
         
     @GetMapping("/mostrar")
-    public ResponseEntity<List<Perfume>> mostrarItemsCarrito() {
+    public ResponseEntity<List<ItemCarritoDTO>> mostrarItemsCarrito() {
         return ResponseEntity.ok(carritoTemporal);
     }
 
@@ -56,7 +57,11 @@ public class CarritoController {
 
             if(cantidad <= perfumeAComprar.getStock()) 
             {
-                carritoTemporal.add(perfumeAComprar);
+                ItemCarritoDTO itemCarrito = new ItemCarritoDTO();
+                itemCarrito.setIdPerfume(perfumeAComprar.getIdPerfume());
+                itemCarrito.setPrecio(perfumeAComprar.getPrecio());
+                itemCarrito.setCantidad(cantidad);
+                carritoTemporal.add(itemCarrito);
                 return ResponseEntity.ok("El perfume ha sido agregado al carrito.");
             }
             else
@@ -71,28 +76,28 @@ public class CarritoController {
     }
 
     @PostMapping("/restarUnidades")
-    public ResponseEntity<String> restarUnidadesCarrito(@RequestParam Long idPerfume, @RequestParam Integer cantidad) {
+    public ResponseEntity<String> restarUnidadesCarrito(@RequestParam Long idPerfume, @RequestParam Integer cantidadAReducir) {
         if(perfumeService.existePerfume(idPerfume)) 
         {
-            for (Perfume perfumeCarrito : carritoTemporal) {
+            for (ItemCarritoDTO perfumeCarrito : carritoTemporal) {
                 if(perfumeCarrito.getIdPerfume().equals(idPerfume)) 
                 {
-                    if(cantidad <= perfumeCarrito.getStock()) 
+                    if(cantidadAReducir <= perfumeCarrito.getCantidad()) 
                     {
-                        if (cantidad == perfumeCarrito.getStock()) 
+                        if (cantidadAReducir == perfumeCarrito.getCantidad()) 
                         {
                             carritoTemporal.remove(perfumeCarrito);
                             return ResponseEntity.ok("El perfume ha sido eliminado del carrito.");
                         } 
                         else 
                         {
-                            perfumeCarrito.setStock(perfumeCarrito.getStock() - cantidad);
+                            perfumeCarrito.setCantidad(perfumeCarrito.getCantidad() - cantidadAReducir);
                             return ResponseEntity.ok("La cantidad del perfume ha sido restada del carrito.");
                         }
                     } 
                     else 
                     {
-                        return ResponseEntity.badRequest().body("La cantidad a restar es mayor que la cantidad en el carrito. Cantidad actual del carrito: " + perfumeCarrito.getStock() + " Cantidad a eliminar: " + cantidad);
+                        return ResponseEntity.badRequest().body("La cantidad a restar es mayor que la cantidad en el carrito. Cantidad actual del carrito: " + perfumeCarrito.getCantidad() + " Cantidad a eliminar: " + cantidadAReducir);
                     }
                 }
             }
@@ -119,9 +124,9 @@ public class CarritoController {
             facturaService.generarFactura(pedido);
 
             //Se actualiza el stock en la base de datos y luego se vacia el carrito
-            for (Perfume perfumeCarrito : carritoTemporal) {
+            for (ItemCarritoDTO perfumeCarrito : carritoTemporal) {
                 Perfume perfumeBD = perfumeService.buscarPerfumePorId(perfumeCarrito.getIdPerfume());
-                perfumeBD.setStock(perfumeBD.getStock() - perfumeCarrito.getStock());
+                perfumeBD.setStock(perfumeBD.getStock() - perfumeCarrito.getCantidad());
                 perfumeService.guardarPerfume(perfumeBD);
             }
             carritoTemporal.clear();

@@ -7,10 +7,10 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.pixelpear.perfulandia.dto.ItemCarritoDTO;
 import com.pixelpear.perfulandia.model.Descuento;
 
 import com.pixelpear.perfulandia.model.Pedido;
-import com.pixelpear.perfulandia.model.Perfume;
 import com.pixelpear.perfulandia.repository.PedidoRepository;
 
 import jakarta.transaction.Transactional;
@@ -23,10 +23,10 @@ public class PedidoService {
     private final PedidoRepository pedidoRepository;
     private final DescuentoService descuentoService;
 
-    public double calcularTotalVenta(List<Perfume> carritoTemporal) {
+    public double calcularTotalVenta(List<ItemCarritoDTO> carritoTemporal) {
         double total = 0.0;
-        for (Perfume perfume : carritoTemporal) {
-            total += perfume.getPrecio() * perfume.getStock();
+        for (ItemCarritoDTO perfume : carritoTemporal) {
+            total += perfume.getPrecio() * perfume.getCantidad();
         }
         return total;
     }
