@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 @RequestMapping("/ventas")
 @RequiredArgsConstructor
 
+//Controller simple de lectura de Pedidos/Facturas
 public class VentasController {
 
     private final PedidoService pedidoService;

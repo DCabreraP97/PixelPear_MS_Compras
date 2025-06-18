@@ -21,6 +21,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("bodega")
+
+// BodegaController es un CRUD de los perfumes en la BD
 public class BodegaController {
     
     private final PerfumeService perfumeService;

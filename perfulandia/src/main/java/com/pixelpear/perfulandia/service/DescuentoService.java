@@ -11,8 +11,11 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 @Transactional
+
 public class DescuentoService {
+
     private final DescuentoRepository descuentoRepository;
+    
     public Descuento buscarDescuentoPorCodigo(String codigoDescuento) {
         Descuento descuento = descuentoRepository.findByCodigoDescuentoIgnoreCase(codigoDescuento);
         return descuento;

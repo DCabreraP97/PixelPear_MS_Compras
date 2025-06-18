@@ -21,30 +21,21 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-
-
 @RestController
 @RequestMapping("/carrito")
 @RequiredArgsConstructor
 
-// Version A
-//Eliminar uso de metodos https en carrito segun alias, el usuario sera uno y anonimo.
-//Recortar pedido y factura. Dejar solo el carrito y la confirmacion de compra.
-//Eliminar factura. Eliminar pedido/metodos o dejar solo generacion de pedidos.
-//Eliminar descuento?
-
-//1)Dejar carrito para agregar, restar stock de este carrito y eliminar perfumes del carrito. Luego poder confirmar el pedido  HECHO
-//2)Dejar bodega para agregar/eliminar/actualizar/leer perfumes en stock HECHO
-//3)Dejar lectura de pedidos y facturas en BodegaController HECHO
-//Falta confirmar feedback de aplicar descuento.  FALTA**
-//Recortar deciamales a la hora de guardar precios y fecha -> hora. FALTA**
-// Falta hacer bodegaControlador CRUD + mostrar pedido/factura. HECHO
-//Falta eliminar mensajes y hacer más legible el codigo. FALTA**
+//CarritoController esta encargado de Añadir/restar unidades en carrito y confirmar la compra.
+//Urls de ejemplo
+//GET localhost:8080/api/v2/carrito/mostrar
+//POST localhost:8080/api/v2/carrito/agregarUnidades?idPerfume=5&cantidad=2
+//POST localhost:8080/api/v2/carrito/restarUnidades?idPerfume=5&cantidadAReducir=1
+//POST localhost:8080/api/v2/carrito/confirmar?codigoDescuento=OFERTONJUNIO
 
 public class CarritoController {
 
-
     public List<ItemCarritoDTO> carritoTemporal = new ArrayList<>();
+
     private final PerfumeService perfumeService;
     private final PedidoService pedidoService;
     private final FacturaService facturaService;
@@ -54,6 +45,7 @@ public class CarritoController {
         return ResponseEntity.ok(carritoTemporal);
     }
 
+    //Agrega unidades al carrito si hay stock suficiente, no actualiza la BD
     @PostMapping("/agregarUnidades")
     public ResponseEntity<String> agregarUnidadesCarrito(@RequestParam Long idPerfume, @RequestParam Integer cantidad) {
         if(perfumeService.existePerfume(idPerfume)) 
@@ -80,6 +72,7 @@ public class CarritoController {
         }
     }
 
+    //El metodo solo resta unidades del carrito no de la BD
     @PostMapping("/restarUnidades")
     public ResponseEntity<String> restarUnidadesCarrito(@RequestParam Long idPerfume, @RequestParam Integer cantidadAReducir) {
         if(perfumeService.existePerfume(idPerfume)) 
@@ -114,6 +107,7 @@ public class CarritoController {
         }
     }
 
+    //Se encarga de confirmar la compra de items del carrito, genera el pedido/factura, actualiza la BD y vacia el carro
     @PostMapping("/confirmar")
     public ResponseEntity<String> confirmarCompra(@RequestParam(required = false) String codigoDescuento) {
         if (carritoTemporal.isEmpty()) {
