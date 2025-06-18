@@ -7,5 +7,5 @@ import com.pixelpear.perfulandia.model.Factura;
 
 @Repository
 public interface FacturaRepository extends JpaRepository<Factura, Long> {
-
+    
 }

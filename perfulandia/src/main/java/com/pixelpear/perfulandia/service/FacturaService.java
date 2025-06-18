@@ -1,6 +1,7 @@
 package com.pixelpear.perfulandia.service;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 
@@ -24,6 +25,13 @@ public class FacturaService {
         factura.setPrecio(pedidoCreado.getPrecioFinal());
         facturaRepository.save(factura);
 
+    }
+    public List<Factura> mostrarFacturas() {
+        return facturaRepository.findAll();
+    }
+
+    public Factura mostrarFacturaPorId(Long id) {
+        return facturaRepository.findById(id).orElse(null);
     }
 
 }
