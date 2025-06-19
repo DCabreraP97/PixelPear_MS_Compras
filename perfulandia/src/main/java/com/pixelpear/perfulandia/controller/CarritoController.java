@@ -41,6 +41,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 // Debo usar JUNIT, mockito, swagger y hateoas o solo algunas?
 // Puedo implementar hateoas en ciertas partes o completamente
 //Swagger se implementa completamente?
+//Que exactamente testear de los metodos? 200, resultados,etc
 
 public class CarritoController {
 
