@@ -37,6 +37,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 // usar Spring Boot Test? POR HACER
 //Hacer pruebas unitarias de los controller y service POR HACER
 
+//Pregunta P: Cuantas pruebas unitarias se deben hacer y puedo hacer solo unas cuantas
+// Debo usar JUNIT, mockito, swagger y hateoas o solo algunas?
+// Puedo implementar hateoas en ciertas partes o completamente
+//Swagger se implementa completamente?
+
 public class CarritoController {
 
     public List<ItemCarritoDTO> carritoTemporal = new ArrayList<>();
