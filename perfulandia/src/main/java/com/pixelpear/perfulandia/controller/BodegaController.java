@@ -45,7 +45,7 @@ public class BodegaController {
     @PostMapping("/agregarPerfume")
     public ResponseEntity<Perfume> agregarPerfume(@RequestBody Perfume perfume) {
         perfumeService.guardarPerfume(perfume);
-        return ResponseEntity.ok(perfume);
+        return ResponseEntity.status(201).body(perfume);
     }
     
     @DeleteMapping("/eliminarPerfume/{idPerfume}")
