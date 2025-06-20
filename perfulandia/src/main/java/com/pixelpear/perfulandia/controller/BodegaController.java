@@ -52,7 +52,7 @@ public class BodegaController {
     public ResponseEntity<String> eliminarPerfume(@PathVariable Long idPerfume) {
         if (perfumeService.existePerfume(idPerfume)) {
             perfumeService.eliminarPerfume(idPerfume);
-            return ResponseEntity.ok("Perfume eliminado con éxito");
+            return ResponseEntity.noContent().build();
         } else {
             return ResponseEntity.notFound().build();
         }

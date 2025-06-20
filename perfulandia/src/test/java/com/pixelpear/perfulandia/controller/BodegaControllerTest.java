@@ -17,6 +17,8 @@ import com.pixelpear.perfulandia.service.PerfumeService;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -31,7 +33,7 @@ public class BodegaControllerTest {
     private PerfumeService perfumeService;
 
     @Test
-    public void mostrarPerfumesDeberiaRetornar200yLista() throws Exception {
+    public void mostrarPerfumes_DeberiaRetornar200yLista() throws Exception {
         List<Perfume> perfumes = List.of(
             new Perfume(1L, "Perfume uno", 3890.0, 100),
             new Perfume(2L, "Perfume dos", 4570.0, 150)
@@ -47,7 +49,7 @@ public class BodegaControllerTest {
     }
 
     @Test
-    public void mostrarPerfumePorIdDeberiaRetornar200yPerfume() throws Exception {
+    public void mostrarPerfumePorId_DeberiaRetornar200yPerfume() throws Exception {
         List<Perfume> perfumes = List.of(
             new Perfume(1L, "Perfume uno", 3890.0, 100),
             new Perfume(2L, "Perfume dos", 4570.0, 150)
@@ -61,7 +63,7 @@ public class BodegaControllerTest {
     }
 
     @Test
-    public void agregarPerfumeDeberiaRetornar201yPerfume() throws Exception {
+    public void agregarPerfume_DeberiaRetornar201yPerfume() throws Exception {
         Perfume perfume = new Perfume(1L, "Perfume uno", 3890.0, 100);
 
         ObjectMapper objectMapper = new ObjectMapper();
@@ -73,4 +75,31 @@ public class BodegaControllerTest {
                   .andExpect(status().isCreated())
                   .andExpect(jsonPath("$.nombre").value("Perfume uno"));
     }
+
+    @Test
+    public void eliminarPerfume_DeberiaRetornar204() throws Exception {
+        when(perfumeService.existePerfume(1L)).thenReturn(true);
+
+        mockMvc.perform(delete("/bodega/eliminarPerfume/1"))
+            .andExpect(status().isNoContent());
+
+        verify(perfumeService, times(1)).eliminarPerfume(1L);
+    }
+
+    @Test
+    public void actualizarPerfume_DeberiaRetornar200yPerfumeActualizado() throws Exception {
+        Perfume perfume = new Perfume(1L, "Perfume uno", 3890.0, 100);
+
+        when(perfumeService.existePerfume(1L)).thenReturn(true);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String json = objectMapper.writeValueAsString(perfume);
+
+        mockMvc.perform(put("/bodega/actualizarPerfume/1")
+                  .contentType(MediaType.APPLICATION_JSON)
+                  .content(json))
+                  .andExpect(status().isOk())
+                  .andExpect(jsonPath("$.nombre").value("Perfume uno"));
+    }
+
 }
