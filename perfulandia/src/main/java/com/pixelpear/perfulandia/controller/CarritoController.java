@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.pixelpear.perfulandia.dto.ItemCarritoDTO;
+import com.pixelpear.perfulandia.dto.MensajeRespuesta;
 import com.pixelpear.perfulandia.model.Pedido;
 import com.pixelpear.perfulandia.model.Perfume;
 import com.pixelpear.perfulandia.service.FacturaService;
@@ -22,6 +23,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Tag(name = "Carrito", description = "Controlador para simular el carrito de compras")
 @RestController
@@ -36,6 +41,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 //POST localhost:8080/api/v2/carrito/confirmar?codigoDescuento=OFERTONJUNIO
 //
 //http://localhost:8080/api/v2/swagger-ui/index.html Para ver la documentacion de swagger
+//Falta mas descripcion de swagger y implementar Hateoas
+
 
 public class CarritoController {
 
@@ -47,14 +54,21 @@ public class CarritoController {
     
     @Operation(summary = "Mostrar items del carrito", description = "Devuelve una lista de los perfumes en el carrito temporal")
     @GetMapping("/mostrar")
-    public ResponseEntity<List<ItemCarritoDTO>> mostrarItemsCarrito() {
-        return ResponseEntity.ok(carritoTemporal);
+    public ResponseEntity<CollectionModel<ItemCarritoDTO>> mostrarItemsCarrito() {
+        CollectionModel<ItemCarritoDTO> carritoConLinks = CollectionModel.of(carritoTemporal,
+        linkTo(methodOn(CarritoController.class).confirmarCompra(null)).withRel("confirmar-compra"),
+        linkTo(methodOn(CarritoController.class).agregarUnidadesCarrito(1L, 1)).withRel("agregar-unidades-carrito"),
+        linkTo(methodOn(CarritoController.class).restarUnidadesCarrito(1L, 1)).withRel("restar-unidades-carrito"),
+        linkTo(methodOn(CarritoController.class).vaciarCarrito()).withRel("vaciar-carrito"),
+        linkTo(methodOn(CarritoController.class).mostrarItemsCarrito()).withSelfRel()
+        );
+        return ResponseEntity.ok(carritoConLinks);
     }
 
     //Agrega unidades al carrito si hay stock suficiente, no actualiza la BD
     @Operation(summary = "Agregar unidades al carrito", description = "Agrega unidades de un perfume al carrito temporal")
     @PostMapping("/agregarUnidades")
-    public ResponseEntity<String> agregarUnidadesCarrito(@RequestParam Long idPerfume, @RequestParam Integer cantidad) {
+    public ResponseEntity<EntityModel<MensajeRespuesta>> agregarUnidadesCarrito(@RequestParam Long idPerfume, @RequestParam Integer cantidad) {
         if(perfumeService.existePerfume(idPerfume)) 
         {
             Perfume perfumeAComprar = perfumeService.buscarPerfumePorId(idPerfume);
@@ -66,23 +80,33 @@ public class CarritoController {
                 itemCarrito.setPrecio(perfumeAComprar.getPrecio());
                 itemCarrito.setCantidad(cantidad);
                 carritoTemporal.add(itemCarrito);
-                return ResponseEntity.ok("El perfume ha sido agregado al carrito.");
+
+                MensajeRespuesta mensaje = new MensajeRespuesta("El perfume ha sido agregado al carrito.");
+                EntityModel<MensajeRespuesta> respuesta = EntityModel.of(mensaje,
+                linkTo(methodOn(CarritoController.class).mostrarItemsCarrito()).withRel("ver-carrito"),
+                linkTo(methodOn(CarritoController.class).confirmarCompra(null)).withRel("confirmar-compra")
+                );
+                return ResponseEntity.ok(respuesta);
             }
             else
             {
-                return ResponseEntity.badRequest().body("No hay suficiente stock para el perfume solicitado.");
+                MensajeRespuesta mensaje = new MensajeRespuesta("No hay suficiente stock para el perfume solicitado.");
+                EntityModel<MensajeRespuesta> respuesta = EntityModel.of(mensaje);
+                return ResponseEntity.badRequest().body(respuesta);
             }
         }
         else
         {
-            return ResponseEntity.badRequest().body("El id del perfume no existe");
+            MensajeRespuesta mensaje = new MensajeRespuesta("El id del perfume no existe");
+            EntityModel<MensajeRespuesta> respuesta = EntityModel.of(mensaje);
+            return ResponseEntity.badRequest().body(respuesta);
         }
     }
 
     //El metodo solo resta unidades del carrito no de la BD
     @Operation(summary = "Restar unidades del carrito", description = "Resta unidades de un perfume en el carrito temporal")
     @PostMapping("/restarUnidades")
-    public ResponseEntity<String> restarUnidadesCarrito(@RequestParam Long idPerfume, @RequestParam Integer cantidadAReducir) {
+    public ResponseEntity<EntityModel<MensajeRespuesta>> restarUnidadesCarrito(@RequestParam Long idPerfume, @RequestParam Integer cantidadAReducir) {
         if(perfumeService.existePerfume(idPerfume)) 
         {
             for (ItemCarritoDTO perfumeCarrito : carritoTemporal) {
@@ -93,34 +117,54 @@ public class CarritoController {
                         if (cantidadAReducir == perfumeCarrito.getCantidad()) 
                         {
                             carritoTemporal.remove(perfumeCarrito);
-                            return ResponseEntity.ok("El perfume ha sido eliminado del carrito.");
+                            MensajeRespuesta mensaje = new MensajeRespuesta("El perfume ha sido eliminado del carrito.");
+                            EntityModel<MensajeRespuesta> respuesta = EntityModel.of(mensaje,
+                            linkTo(methodOn(CarritoController.class).mostrarItemsCarrito()).withRel("ver-carrito"),
+                            linkTo(methodOn(CarritoController.class).confirmarCompra(null)).withRel("confirmar-compra")
+                            );            
+                            return ResponseEntity.ok(respuesta);
                         } 
                         else 
                         {
                             perfumeCarrito.setCantidad(perfumeCarrito.getCantidad() - cantidadAReducir);
-                            return ResponseEntity.ok("La cantidad del perfume ha sido restada del carrito.");
+                            MensajeRespuesta mensaje = new MensajeRespuesta("La cantidad del perfume ha sido restada del carrito.");
+                            EntityModel<MensajeRespuesta> respuesta = EntityModel.of(mensaje,
+                            linkTo(methodOn(CarritoController.class).mostrarItemsCarrito()).withRel("ver-carrito"),
+                            linkTo(methodOn(CarritoController.class).confirmarCompra(null)).withRel("confirmar-compra")
+                            );
+                            return ResponseEntity.ok(respuesta);
                         }
                     } 
                     else 
                     {
-                        return ResponseEntity.badRequest().body("La cantidad a restar es mayor que la cantidad en el carrito. Cantidad actual del carrito: " + perfumeCarrito.getCantidad() + " Cantidad a eliminar: " + cantidadAReducir);
+                        MensajeRespuesta mensaje = new MensajeRespuesta("La cantidad a restar es mayor que la cantidad en el carrito. Cantidad actual del carrito: " + perfumeCarrito.getCantidad() + " Cantidad a eliminar: " + cantidadAReducir);
+                        EntityModel<MensajeRespuesta> respuesta = EntityModel.of(mensaje);
+                        return ResponseEntity.badRequest().body(respuesta);
                     }
                 }
             }
-            return ResponseEntity.badRequest().body("El perfume no se encuentra en el carrito.");
+            MensajeRespuesta mensaje = new MensajeRespuesta("El perfume no se encuentra en el carrito.");
+            EntityModel<MensajeRespuesta> respuesta = EntityModel.of(mensaje);
+            return ResponseEntity.badRequest().body(respuesta);
         } 
         else 
         {
-            return ResponseEntity.badRequest().body("El id del perfume no existe");
+            MensajeRespuesta mensaje = new MensajeRespuesta("El id del perfume no existe");
+            EntityModel<MensajeRespuesta> respuesta = EntityModel.of(mensaje);
+            return ResponseEntity.badRequest().body(respuesta);
         }
     }
 
     //Se encarga de confirmar la compra de items del carrito, genera el pedido/factura, actualiza la BD y vacia el carro
     @Operation(summary = "Confirmar compra", description = "Confirma la compra de los perfumes en el carrito temporal. Genera un pedido y factura. Vacia el carrito.")
     @PostMapping("/confirmar")
-    public ResponseEntity<String> confirmarCompra(@RequestParam(required = false) String codigoDescuento) {
+    public ResponseEntity<EntityModel<MensajeRespuesta>> confirmarCompra(@RequestParam(required = false) String codigoDescuento) {
         if (carritoTemporal.isEmpty()) {
-            return ResponseEntity.badRequest().body("El carrito está vacío.");
+            MensajeRespuesta mensaje = new MensajeRespuesta("El carrito está vacío.");
+            EntityModel<MensajeRespuesta> respuesta = EntityModel.of(mensaje,
+            linkTo(methodOn(CarritoController.class).agregarUnidadesCarrito(1L, 1)).withRel("agregar-unidades-carrito")
+            );
+            return ResponseEntity.badRequest().body(respuesta);
         }
         else
         {
@@ -138,15 +182,26 @@ public class CarritoController {
                 perfumeService.guardarPerfume(perfumeBD);
             }
             carritoTemporal.clear();
-            return ResponseEntity.ok("La compra ha sido confirmada.");
+
+            MensajeRespuesta mensaje = new MensajeRespuesta("La compra ha sido confirmada.");
+            EntityModel<MensajeRespuesta> respuesta = EntityModel.of(mensaje,
+            linkTo(methodOn(CarritoController.class).mostrarItemsCarrito()).withRel("ver-carrito"),
+            linkTo(methodOn(CarritoController.class).agregarUnidadesCarrito(1L, 1)).withRel("agregar-unidades-carrito")
+            );
+            return ResponseEntity.ok(respuesta);
         }
     }
 
     @Operation(summary = "Vaciar carrito", description = "Vacia el carrito temporal de compras")
     @DeleteMapping("vaciar")
-    public ResponseEntity<String> vaciarCarrito() {
+    public ResponseEntity<EntityModel<MensajeRespuesta>> vaciarCarrito() {
         carritoTemporal.clear();
-        return ResponseEntity.ok("El carrito ha sido vaciado");
+        MensajeRespuesta mensaje = new MensajeRespuesta("El carrito ha sido vaciado.");
+        EntityModel<MensajeRespuesta> respuesta = EntityModel.of(mensaje,
+        linkTo(methodOn(CarritoController.class).mostrarItemsCarrito()).withRel("ver-carrito"),
+        linkTo(methodOn(CarritoController.class).agregarUnidadesCarrito(1L, 1)).withRel("agregar-unidades-carrito")
+        );
+        return ResponseEntity.ok(respuesta);
     }
 
 }
