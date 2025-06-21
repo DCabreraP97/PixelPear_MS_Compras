@@ -12,6 +12,8 @@ import com.pixelpear.perfulandia.service.FacturaService;
 import com.pixelpear.perfulandia.service.PedidoService;
 import com.pixelpear.perfulandia.service.PerfumeService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.ResponseEntity;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+@Tag(name = "Carrito", description = "Controlador para simular el carrito de compras")
 @RestController
 @RequestMapping("/carrito")
 @RequiredArgsConstructor
@@ -32,16 +35,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 //POST localhost:8080/api/v2/carrito/restarUnidades?idPerfume=5&cantidadAReducir=1
 //POST localhost:8080/api/v2/carrito/confirmar?codigoDescuento=OFERTONJUNIO
 //
-// Falta implementar pruebas unitarias. Usar JUNIT y mockito.  POR HACER
-// Falta usar swagger para documentar y hateoas para navegar por la API. POR HACER
-// usar Spring Boot Test? POR HACER
-//Hacer pruebas unitarias de los controller y service POR HACER
-
-//Pregunta P: Cuantas pruebas unitarias se deben hacer y puedo hacer solo unas cuantas
-// Debo usar JUNIT, mockito, swagger y hateoas o solo algunas?
-// Puedo implementar hateoas en ciertas partes o completamente
-//Swagger se implementa completamente?
-//Que exactamente testear de los metodos? 200, resultados,etc
+//http://localhost:8080/api/v2/swagger-ui/index.html Para ver la documentacion de swagger
 
 public class CarritoController {
 
@@ -50,13 +44,15 @@ public class CarritoController {
     private final PerfumeService perfumeService;
     private final PedidoService pedidoService;
     private final FacturaService facturaService;
-        
+    
+    @Operation(summary = "Mostrar items del carrito", description = "Devuelve una lista de los perfumes en el carrito temporal")
     @GetMapping("/mostrar")
     public ResponseEntity<List<ItemCarritoDTO>> mostrarItemsCarrito() {
         return ResponseEntity.ok(carritoTemporal);
     }
 
     //Agrega unidades al carrito si hay stock suficiente, no actualiza la BD
+    @Operation(summary = "Agregar unidades al carrito", description = "Agrega unidades de un perfume al carrito temporal")
     @PostMapping("/agregarUnidades")
     public ResponseEntity<String> agregarUnidadesCarrito(@RequestParam Long idPerfume, @RequestParam Integer cantidad) {
         if(perfumeService.existePerfume(idPerfume)) 
@@ -84,6 +80,7 @@ public class CarritoController {
     }
 
     //El metodo solo resta unidades del carrito no de la BD
+    @Operation(summary = "Restar unidades del carrito", description = "Resta unidades de un perfume en el carrito temporal")
     @PostMapping("/restarUnidades")
     public ResponseEntity<String> restarUnidadesCarrito(@RequestParam Long idPerfume, @RequestParam Integer cantidadAReducir) {
         if(perfumeService.existePerfume(idPerfume)) 
@@ -119,6 +116,7 @@ public class CarritoController {
     }
 
     //Se encarga de confirmar la compra de items del carrito, genera el pedido/factura, actualiza la BD y vacia el carro
+    @Operation(summary = "Confirmar compra", description = "Confirma la compra de los perfumes en el carrito temporal. Genera un pedido y factura. Vacia el carrito.")
     @PostMapping("/confirmar")
     public ResponseEntity<String> confirmarCompra(@RequestParam(required = false) String codigoDescuento) {
         if (carritoTemporal.isEmpty()) {
@@ -144,6 +142,7 @@ public class CarritoController {
         }
     }
 
+    @Operation(summary = "Vaciar carrito", description = "Vacia el carrito temporal de compras")
     @DeleteMapping("vaciar")
     public ResponseEntity<String> vaciarCarrito() {
         carritoTemporal.clear();
