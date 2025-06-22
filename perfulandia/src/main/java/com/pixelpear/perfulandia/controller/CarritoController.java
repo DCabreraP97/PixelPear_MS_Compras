@@ -41,7 +41,8 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 //POST localhost:8080/api/v2/carrito/restarUnidades?idPerfume=5&cantidadAReducir=1
 //POST localhost:8080/api/v2/carrito/confirmar?codigoDescuento=OFERTONJUNIO
 //
-//http://localhost:8080/api/v2/swagger-ui/index.html Para ver la documentacion de swagger
+//http://localhost:8080/api/v2/swagger-ui Para ver la documentacion de swagger
+//o http://localhost:8080/api/v2/swagger-ui/index.html
 
 
 public class CarritoController {
