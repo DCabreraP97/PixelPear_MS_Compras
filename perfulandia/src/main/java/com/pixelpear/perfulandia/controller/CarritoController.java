@@ -34,6 +34,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RequiredArgsConstructor
 
 //CarritoController esta encargado de Añadir/restar unidades en carrito y confirmar la compra.
+
 //Urls de ejemplo
 //GET localhost:8080/api/v2/carrito/mostrar
 //POST localhost:8080/api/v2/carrito/agregarUnidades?idPerfume=5&cantidad=2
@@ -41,7 +42,6 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 //POST localhost:8080/api/v2/carrito/confirmar?codigoDescuento=OFERTONJUNIO
 //
 //http://localhost:8080/api/v2/swagger-ui/index.html Para ver la documentacion de swagger
-//Falta mas descripcion de swagger y implementar Hateoas
 
 
 public class CarritoController {
